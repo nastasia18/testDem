@@ -1,0 +1,19 @@
+testAgent
+
+
+SELECT        TOP (100) PERCENT AgentType AS [Тип агента], AgentName AS [Наименование агента], Phone AS [Номер телефона], Priority AS Приоритет,
+                             (SELECT        SUM(MinPrice) AS Expr1
+                               FROM            dbo.Products AS p
+                               WHERE        (IdProduct IN
+                                                             (SELECT        IdProduct
+                                                               FROM            dbo.ProductSale AS ps
+                                                               WHERE        (IdAgent = a.IdAgent)))) / 200 AS [Скидка агента], CAST
+                             ((SELECT        SUM(MinPrice) AS Expr1
+                                 FROM            dbo.Products AS p
+                                 WHERE        (IdProduct IN
+                                                              (SELECT        IdProduct
+                                                                FROM            dbo.ProductSale AS ps
+                                                                WHERE        (IdAgent = a.IdAgent) AND (Date BETWEEN DATEADD(year, - 10, SYSDATETIME()) AND SYSDATETIME())))) AS varchar(10)) + ' руб.' AS [Количество продаж], 
+                         'Директор: ' + Directior + '. Адрес: ' + Adress AS Описание, IdAgent, LogoPath
+FROM            dbo.Agents AS a
+ORDER BY Приоритет DESC
